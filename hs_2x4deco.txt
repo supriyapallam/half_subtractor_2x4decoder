@@ -1,0 +1,46 @@
+//Design Code
+module dec2x4(output out0,out1,out2,out3,input in0,in1);
+  assign out0=(~in0)&(~in1);
+  assign out1=(~in0)&(in1);
+  assign out2=in0&(~in1);
+  assign out3=in0&in1;
+endmodule
+
+
+module or_gate(output out,input a,b);
+  wire o1,o2,o3,o4;
+  wire o5,o6,o7;
+  dec2x4 a1(o4,o1,o2,o3,a,b);
+  dec2x4 a2(out,o5,o6,o7,o4,1'b0);
+endmodule
+
+module hs(output diff,barrow,input a,b);
+  wire o1,o2,o3;
+  dec2x4 a1(o1,barrow,o3,o2,a,b);
+  or_gate a2(diff,barrow,o3);
+endmodule
+
+//Test Bench Code
+module tb();
+  wire diff,barrow;
+  reg a,b;
+  hs DUT(diff,barrow,a,b);
+  initial
+    begin
+      integer i;
+      for(i=0;i<4;i=i+1)
+        begin
+          {a,b}=i;
+          #10;
+        end
+    end
+  initial
+    begin
+      $monitor("a=%b,b=%b,diff=%b,barrow=%b",a,b,diff,barrow);
+    end
+  initial
+    begin
+      $dumpfile("test.vcd");
+      $dumpvars(1);
+    end
+endmodule
